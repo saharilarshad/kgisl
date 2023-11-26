@@ -3,7 +3,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { Toaster, toast } from 'sonner'
-import { employeeStore } from "@/store/store"
+import { employeeStore, createEmployeeStore } from "@/store/store"
 import { ErrorMessage } from "@hookform/error-message"
 import { getTranslations } from "@/app/initTranslations";
 import TranslationsProvider from '@/context/AppTranslationProvider';
@@ -17,7 +17,16 @@ const AddPage = ({ params: { locale } }: { params: { locale: string } }) => {
     const { register, handleSubmit, getValues, watch, reset, formState: { errors } } = useForm<HTMLFormElement>();
     const [file, setFile] = useState<File>()
 
+    
+    // const currentLocale = 'en';
+    const currentLocale = locale;
+    
+    const store = createEmployeeStore(currentLocale);
     const employeeData = employeeStore((state: any) => state?.addEmployee)
+
+    // store.subscribe((state) => {
+    //     console.log('Current locale:', state.currentLocale);
+    // });
 
     const onSubmit = (data: HTMLFormElement, e) => {
         e.preventDefault()
@@ -28,7 +37,7 @@ const AddPage = ({ params: { locale } }: { params: { locale: string } }) => {
         formData.append("salary", data.salary);
         formData.append("age", data.age);
 
-        employeeData(formData)
+        employeeData(formData,currentLocale)
 
         toast.success("Employee has been Added!");
         setFile(null)

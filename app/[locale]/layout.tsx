@@ -6,7 +6,7 @@ import Navbar from '@/components/navbar/Navbar'
 import QueryProvider from "@/context/QueryProvider"
 import { dir } from 'i18next';
 import i18nConfig from '@/next-i18next.config';
-import AppTranslationProvider from "@/context/AppTranslationProvider"
+import { ApiCacheProvider } from '@/context/CacheContextApi'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -33,13 +33,13 @@ export default function RootLayout({
   return (
     <html lang={locale} dir={dir(locale)}>
       <body className={inter.className}>
-        {/* <AppTranslationProvider> */}
-        <QueryProvider>
-          <TopBar />
-          <Navbar />
-          {children}
-        </QueryProvider>
-        {/* </AppTranslationProvider> */}
+        <TopBar />
+        <ApiCacheProvider>
+          <QueryProvider>
+            <Navbar />
+            {children}
+          </QueryProvider>
+        </ApiCacheProvider>
       </body>
     </html>
   )

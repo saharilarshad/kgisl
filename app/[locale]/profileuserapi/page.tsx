@@ -5,11 +5,13 @@ import { useQuery } from "@tanstack/react-query"
 import axios from 'axios'
 // import { useTranslation } from 'react-i18next';
 import { getTranslations } from "@/app/initTranslations";
+import { useApiCache } from "@/context/CacheContextApi"
 // import TranslationsProvider from '@/context/AppTranslationProvider';
 
 const i18nNamespaces = ['profile'];
 
 const DataApi = ({ locale }: { locale: string }) => {
+    const { cacheApiResponse, getCachedApiResponse } = useApiCache();
     // const { t } = useTranslation('common')
     // const { t } = useTranslation()
     const [translations, setTranslations] = useState(null);
@@ -19,8 +21,21 @@ const DataApi = ({ locale }: { locale: string }) => {
     const { isPending, isError, data, error } = useQuery({
         queryKey: ['kgislData'],
         queryFn: async () => {
-            const res = await axios.get('https://reqres.in/api/users')
-            return res.data
+            // const res = await axios.get('https://reqres.in/api/users')
+            // return res.data
+
+            const cachedResponse = getCachedApiResponse('kgislData');
+            console.log('cachedResponse', cachedResponse)
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            const res = await axios.get('https://reqres.in/api/users');
+            const responseData = res.data;
+
+            cacheApiResponse('kgislData', responseData);
+
+            return responseData;
         }
     })
 
